@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import random
+
+from config import *
 
 # Directions are:
 # +. left to right
@@ -32,7 +35,7 @@ all_directions = ('+-', '+.', '++', '.+', '.-', '--', '-.', '-+')
 styles = {
     'easy': ('10x10', ('+.', '.+')),
     'standard': ('15x15', ('+-', '+.', '++', '.+', '.-', '-.')),
-    'hard': ('20x20', all_directions),
+    'hard': ('15x15', all_directions)
 }
 
 dirconv = {
@@ -46,47 +49,62 @@ letters = "abcdefghijklmnopqrstuvwxyz"
 class Grid(object):
     def __init__(self, wid, hgt):
         self.wid = wid
-	self.hgt = hgt
-	self.data = ['.'] * (wid * hgt)
-	self.used = [' '] * (wid * hgt)
+        self.hgt = hgt
+        self.data = ['.'] * (wid * hgt)
+        self.used = [' '] * (wid * hgt)
         self.words = []
 
     def to_text(self):
         result = []
-    	for row in xrange(self.hgt):
-	    result.append(''.join(self.data[row * self.wid :
+        for row in xrange(self.hgt):
+            result.append(''.join(self.data[row * self.wid :
                                   (row + 1) * self.wid]))
-	return '\n'.join(result)
-        
+        return '\n'.join(result)
+
     def used_to_text(self):
         result = []
-    	for row in xrange(self.hgt):
-	    result.append(''.join(self.used[row * self.wid :
+        for row in xrange(self.hgt):
+            result.append(''.join(self.used[row * self.wid :
                                   (row + 1) * self.wid]))
-	return '\n'.join(result)
+        return '\n'.join(result)
 
-    def to_pdf(self, filename):
+    def to_pdf(self, filename, words):
         from reportlab.pdfgen import canvas
-        from reportlab.lib.pagesizes import letter, A4
-
-        pagesize = A4
-        paper = canvas.Canvas(filename, pagesize=pagesize)
-        margin = 50
-        printwid, printhgt = map(lambda x: x - margin * 2, pagesize)
+        from reportlab.lib.pagesizes import cm, A4
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+        from reportlab.lib import colors
+        from reportlab.platypus.paragraph import Paragraph
+        from reportlab.lib.styles import ParagraphStyle
+        from reportlab.platypus.flowables import Spacer
         
-        gx = margin
-        gy = printhgt - margin
-        gdx = printwid / self.wid
-        gdy = printhgt / self.hgt
-        for y in xrange(self.hgt):
-            cy = gy - y * gdy
-            for x in xrange(self.wid):
-                cx = gx + x * gdx
-                p = x + self.wid * y
-                c = self.data[p]
-                paper.drawString(cx, cy, c)
-        paper.showPage()
-        paper.save()
+        doc = SimpleDocTemplate(filename, pagesize=A4)
+        data = [self.data[x: x + self.wid] for x in range(0, len(self.data), self.wid)]
+        l = cm * 1.25
+        t=Table(data, len(data[0]) * [l], len(data) * [l])
+        t.setStyle(TableStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                               ('VALIGN',(0,0),(-1,-1),'TOP'),
+                               ('BOX', (0,0), (-1,-1), 1, colors.black),
+                               ('FONTSIZE', (0,0), (-1,-1), 20)
+                               ]))
+        style = ParagraphStyle(
+            'default',
+            fontName='Times-Roman',
+            fontSize=18,
+            leading=18,
+            spaceBefore=10,
+            spaceAfter=10,
+            bulletFontName='Times-Roman',
+            bulletFontSize=18,
+            bulletIndent=0,
+        )
+        elements = [Paragraph(FIND_THE_WORDS, style, None)]
+        elements.append(Paragraph(", ".join(words), style))
+        elements.append(Spacer(1, 0.5 * cm))
+        elements.append(t)
+        style.fontSize = 12
+        elements.append(Spacer(1, 0.5 * cm))
+        elements.append(Paragraph(BOTTOM_TEXT, style, None))
+        doc.build(elements)
 
     def pick_word_pos(self, wordlen, directions):
         xd, yd = random.choice(directions)
@@ -177,11 +195,12 @@ def make_grid(stylep="standard", words=[], tries=100):
 if __name__ == '__main__':
     import sys
     random.seed()
-    grid = make_grid(sys.argv[1], sys.argv[2:])
+    words = sys.argv[2:]
+    grid = make_grid(sys.argv[1], words)
     if grid is None:
         print "Can't make a grid"
     else:
         print grid.to_text()
         print
         print grid.used_to_text()
-    grid.to_pdf("ws.pdf")
+    grid.to_pdf(words[0] + ".pdf", words)
