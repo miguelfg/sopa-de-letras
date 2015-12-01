@@ -196,7 +196,7 @@ if __name__ == '__main__':
     import sys
     random.seed()
     words = sys.argv[2:]
-    grid = make_grid(sys.argv[1], words)
+    grid = make_grid(sys.argv[1], ["".join(w.lower().split()) for w in words])
     if grid is None:
         print "Can't make a grid"
     else:
