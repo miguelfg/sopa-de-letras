@@ -44,7 +44,7 @@ dirconv = {
     '+': 1,
 }
 
-letters = "abcdefghijklmnopqrstuvwxyz"
+letters = u"abcdefghijklmnñopqrstuvwxyz"
 
 class Grid(object):
     def __init__(self, wid, hgt):
@@ -196,11 +196,12 @@ if __name__ == '__main__':
     import sys
     random.seed()
     words = sys.argv[2:]
-    grid = make_grid(sys.argv[1], ["".join(w.lower().split()) for w in words])
+    words_to_use = [unicode("".join(w.lower().split()), 'utf-8') for w in words]
+    grid = make_grid(sys.argv[1], words_to_use)
     if grid is None:
         print "Can't make a grid"
     else:
         print grid.to_text()
         print
         print grid.used_to_text()
-    grid.to_pdf(words[0] + ".pdf", words)
+    grid.to_pdf(words_to_use[0] + ".pdf", words)
