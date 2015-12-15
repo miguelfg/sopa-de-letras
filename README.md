@@ -10,7 +10,11 @@ grid.
 
 Usage:
 
- python wordsearch.py <difficulty> [word...]
+    python wordsearch.py <difficulty> [word...]
+    
+Example:
+
+    python wordsearch.py easy duck "polar bear" dog horse rabbit
 
 The grid size, and permissible directions for words, is controlled by the
 difficulty setting, which is one of `easy`, `normal` and `hard`.
