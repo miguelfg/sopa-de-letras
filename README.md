@@ -33,5 +33,5 @@ Improvements from the original version
 
 * Better pdf layout
 * Configurable header and footer
-* Allow words with spaces (using quotes). Example: `python wordsearch.py hard word1 "word with spaces" word3
+* Allow words with spaces (using quotes). Example: `python wordsearch.py hard word1 "word with spaces" word3`
 * Allow not only ascii input (for example, words with ñ or á é í ó ú are fine)
