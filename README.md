@@ -26,7 +26,7 @@ Example of the generated pdf: https://github.com/jjconti/sopa-de-letras/blob/mas
 Requirements
 ============
 
-reportlab Python library (https://pypi.python.org/pypi/reportlab)
+* Reportlab (https://pypi.python.org/pypi/reportlab)
 
 Improvements from the original version
 ======================================
