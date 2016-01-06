@@ -11,25 +11,6 @@ from config import *
 # .+ top to bottom
 # .- bottom to top
 
-def read_words(filename):
-    words = set()
-    fd = open(filename)
-    try:
-        for line in fd.readlines():
-            if "'" in line:
-                continue
-            line = line.strip().lower()
-            if len(line) > 3 and len(line) < 7:
-                words.add(line)
-    finally:
-        fd.close()
-    return words
-
-all_words = read_words('/usr/share/dict/words')
-explicit_words = ('fuck', 'cunt', 'piss', 'bloody', 'shit', 'boob')
-for word in explicit_words:
-    all_words.add(word)
-
 all_directions = ('+-', '+.', '++', '.+', '.-', '--', '-.', '-+')
 
 styles = {
@@ -158,9 +139,6 @@ class Grid(object):
             if self.data[p] == '.':
                 self.data[p] = random.choice(letters)
 
-    def remove_bad_words(self):
-        return True
-
 def make_grid(stylep="standard", words=[], tries=100):
     # Parse and validate the style parameter.
     size, directions = styles.get(stylep, (stylep, all_directions))
@@ -176,21 +154,15 @@ def make_grid(stylep="standard", words=[], tries=100):
                   for direction in directions]
 
     while True:
-        while True:
-            grid = Grid(wid, hgt)
-            if grid.place_words(words, directions):
-                break
-            tries -= 1
-            if tries <= 0:
-                return None
-
-        grid.fill_in_letters()
-        if grid.remove_bad_words():
-            return grid
-
+        grid = Grid(wid, hgt)
+        if grid.place_words(words, directions):
+            break
         tries -= 1
         if tries <= 0:
             return None
+
+    grid.fill_in_letters()
+    return grid
 
 if __name__ == '__main__':
     import sys
