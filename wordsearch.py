@@ -37,14 +37,14 @@ class Grid(object):
 
     def to_text(self):
         result = []
-        for row in xrange(self.hgt):
+        for row in range(self.hgt):
             result.append(''.join(self.data[row * self.wid :
                                   (row + 1) * self.wid]))
         return '\n'.join(result)
 
     def used_to_text(self):
         result = []
-        for row in xrange(self.hgt):
+        for row in range(self.hgt):
             result.append(''.join(self.used[row * self.wid :
                                   (row + 1) * self.wid]))
         return '\n'.join(result)
@@ -135,7 +135,7 @@ class Grid(object):
         return True
 
     def fill_in_letters(self):
-        for p in xrange(self.wid * self.hgt):
+        for p in range(self.wid * self.hgt):
             if self.data[p] == '.':
                 self.data[p] = random.choice(letters)
 
@@ -168,12 +168,13 @@ if __name__ == '__main__':
     import sys
     random.seed()
     words = sys.argv[2:]
-    words_to_use = [unicode("".join(w.lower().split()), 'utf-8') for w in words]
+    words_to_use = ["".join(w.lower().split()) for w in words]
+
     grid = make_grid(sys.argv[1], words_to_use)
     if grid is None:
-        print "Can't make a grid"
+        print("Can't make a grid")
     else:
-        print grid.to_text()
-        print
-        print grid.used_to_text()
+        print(grid.to_text())
+        print("")
+        print(grid.used_to_text())
     grid.to_pdf(words_to_use[0] + ".pdf", words)
